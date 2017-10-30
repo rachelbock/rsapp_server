@@ -16,7 +16,7 @@ public class ConnectionPool {
 
     static {
         HikariConfig config = new HikariConfig();
-        config.setJdbcUrl("jdbc:mysql://208.187.247.164:3306/rs_innovationday");
+        config.setJdbcUrl("jdbc:mysql://127.0.0.1:3306/rs_innovationday");
         config.setUsername("root");
         config.setPassword(System.getenv("DB_PASSWORD"));
         config.addDataSourceProperty("cachePrepStmts", "true");

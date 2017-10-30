@@ -2,11 +2,13 @@ package com.rachelbock.resources;
 
 import com.rachelbock.data.Message;
 import com.rachelbock.db.ConnectionPool;
+import org.joda.time.DateTime;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -30,8 +32,12 @@ public class MessageResource {
                 Message message = new Message();
                 message.setMessageId(resultSet.getInt("id"));
                 message.setRecepName(resultSet.getString("recep_name"));
-                message.setNotes(resultSet.getString("notes"));
+                message.setUrgent(resultSet.getBoolean("urgent"));
                 message.setMessageDate(resultSet.getDate("message_date"));
+                message.setLocation(resultSet.getString("location"));
+                message.setReceivedDate(resultSet.getDate("received_date"));
+                message.setReceivedBy(resultSet.getString("received_by"));
+                message.setTeamName(resultSet.getString("team_name"));
 
                 messages.add(message);
             }
@@ -45,18 +51,59 @@ public class MessageResource {
         throw new NotFoundException("Could not find any open messages");
     }
 
+    @GET
+    @Path("/all_messages")
+    public List<Message> getAllMessages() {
+        List<Message> messages = new ArrayList<>();
 
-//    @GET
-//    @Path("/all_mesages")
-//    public List<Message> getAllMessages() {
-//
-//    }
-//
-//    @POST
-//    @Path("new_message")
-//    public Message addNewMessage() {
-//
-//    }
+        try (Connection conn = ConnectionPool.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet resultSet = stmt.executeQuery("SELECT * FROM message")) {
+
+            while (resultSet.next()) {
+                Message message = new Message();
+                message.setMessageId(resultSet.getInt("id"));
+                message.setRecepName(resultSet.getString("recep_name"));
+                message.setUrgent(resultSet.getBoolean("urgent"));
+                message.setMessageDate(resultSet.getDate("message_date"));
+                message.setLocation(resultSet.getString("location"));
+                message.setReceivedDate(resultSet.getDate("received_date"));
+                message.setReceivedBy(resultSet.getString("received_by"));
+                message.setTeamName(resultSet.getString("team_name"));
+
+                messages.add(message);
+            }
+            return messages;
+        } catch (SQLIntegrityConstraintViolationException e) {
+            throw new NotFoundException("Could not find any open messages");
+        } catch (SQLException e1) {
+            e1.printStackTrace();
+        }
+
+        throw new NotFoundException("Could not find any open messages");
+    }
+
+    @POST
+    @Path("new_message")
+    public Message addNewMessage(NewMessageRequest newMessageRequest) {
+        try (Connection conn = ConnectionPool.getConnection()) {
+            PreparedStatement stmt = conn.prepareStatement("INSERT INTO message (recep_name, team_name, " +
+                    "location, message, message_date) VALUES ?,?,?,?");
+
+            stmt.setString(1, newMessageRequest.getRecepName());
+            stmt.setString(2, newMessageRequest.getTeamName());
+            stmt.setString(3, newMessageRequest.getLocation());
+            stmt.setBoolean(4, newMessageRequest.isUrgent());
+            stmt.setDate(5, new java.sql.Date(Calendar.getInstance().getTimeInMillis()));
+            stmt.execute();
+
+        } catch (SQLIntegrityConstraintViolationException e) {
+            throw new BadRequestException("Duplicate Message");
+        } catch (SQLException e1) {
+            e1.printStackTrace();
+        }
+        throw new InternalServerErrorException("Internal Error - could not create new message");
+    }
 //
 //    @PUT
 //    @Path("update_message")
@@ -156,7 +203,25 @@ public class MessageResource {
      */
     public static class NewMessageRequest {
         protected String recepName;
-        protected String notes;
+        protected boolean urgent;
+        protected String teamName;
+        protected String location;
+
+        public String getLocation() {
+            return location;
+        }
+
+        public void setLocation(String location) {
+            this.location = location;
+        }
+
+        public String getTeamName() {
+            return teamName;
+        }
+
+        public void setTeamName(String teamName) {
+            this.teamName = teamName;
+        }
 
         public String getRecepName() {
             return recepName;
@@ -166,12 +231,12 @@ public class MessageResource {
             this.recepName = recepName;
         }
 
-        public String getNotes() {
-            return notes;
+        public boolean isUrgent() {
+            return urgent;
         }
 
-        public void setNotes(String notes) {
-            this.notes = notes;
+        public void setUrgent(boolean urgent) {
+            this.urgent = urgent;
         }
     }
 

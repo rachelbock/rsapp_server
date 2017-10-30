@@ -1,23 +1,22 @@
 package com.rachelbock.resources;
 
-import com.rachelbock.data.Message;
-import com.rachelbock.db.ConnectionPool;
-
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
+import javax.ws.rs.core.Response;
 
 /**
- * Class to set up the database connection for Walls
+ * Resource for device tokens for notifications.
  */
-
-@Path("/user/{username}/walls")
+@Path("/tokens")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class WallsResource {
+public class TokensResouce {
 
+
+//    @POST
+//    public Response registerToken() {
+//
+//    }
 
 //    /**
 //     * Retrieves wallSection data by wallid. It will return an empty list if unable to retrieve wallSections.

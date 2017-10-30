@@ -25,7 +25,7 @@ public class RSAppServerApplication extends Application<RSAppServerConfiguration
     @Override
     public void run(final RSAppServerConfiguration configuration,
                     final Environment environment) {
-        environment.jersey().register(new WallsResource());
+        environment.jersey().register(new TokensResouce());
         environment.jersey().register(new MessageResource());
     }
 

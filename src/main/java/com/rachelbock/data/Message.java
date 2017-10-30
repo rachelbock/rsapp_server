@@ -9,10 +9,20 @@ public class Message {
 
     private int messageId;
     private String recepName;
-    private String notes;
+    private String teamName;
+    private boolean urgent;
     private Date messageDate;
-    private String claimedBy;
-    private String claimedDate;
+    private String receivedBy;
+    private Date receivedDate;
+    private String location;
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
 
     public int getMessageId() {
         return messageId;
@@ -30,12 +40,20 @@ public class Message {
         this.recepName = recepName;
     }
 
-    public String getNotes() {
-        return notes;
+    public boolean isUrgent() {
+        return urgent;
     }
 
-    public void setNotes(String notes) {
-        this.notes = notes;
+    public void setUrgent(boolean urgent) {
+        this.urgent = urgent;
+    }
+
+    public String getTeamName() {
+        return teamName;
+    }
+
+    public void setTeamName(String teamName) {
+        this.teamName = teamName;
     }
 
     public Date getMessageDate() {
@@ -46,19 +64,19 @@ public class Message {
         this.messageDate = messageDate;
     }
 
-    public String getClaimedBy() {
-        return claimedBy;
+    public String getReceivedBy() {
+        return receivedBy;
     }
 
-    public void setClaimedBy(String claimedBy) {
-        this.claimedBy = claimedBy;
+    public void setReceivedBy(String receivedBy) {
+        this.receivedBy = receivedBy;
     }
 
-    public String getClaimedDate() {
-        return claimedDate;
+    public Date getReceivedDate() {
+        return receivedDate;
     }
 
-    public void setClaimedDate(String claimedDate) {
-        this.claimedDate = claimedDate;
+    public void setReceivedDate(Date receivedDate) {
+        this.receivedDate = receivedDate;
     }
 }
