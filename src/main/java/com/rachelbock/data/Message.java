@@ -1,88 +1,64 @@
 package com.rachelbock.data;
 
+import java.util.Date;
+
 /**
  * Class to hold Message data
  */
 public class Message {
 
-    protected int climbId;
-    protected int gymRating;
-    protected int userRating;
-    protected String tapeColor;
-    protected int wallId;
-    protected boolean isProject;
-    protected boolean isCompleted;
-    protected String type;
-    protected boolean removed;
+    private int messageId;
+    private String recepName;
+    private String notes;
+    private Date messageDate;
+    private String claimedBy;
+    private String claimedDate;
 
-    public int getClimbId() {
-        return climbId;
+    public int getMessageId() {
+        return messageId;
     }
 
-    public void setClimbId(int id) {
-        this.climbId = id;
+    public void setMessageId(int messageId) {
+        this.messageId = messageId;
     }
 
-    public int getGymRating() {
-        return gymRating;
+    public String getRecepName() {
+        return recepName;
     }
 
-    public void setGymRating(int gymRating) {
-        this.gymRating = gymRating;
+    public void setRecepName(String recepName) {
+        this.recepName = recepName;
     }
 
-    public int getUserRating() {
-        return userRating;
+    public String getNotes() {
+        return notes;
     }
 
-    public void setUserRating(int userRating) {
-        this.userRating = userRating;
+    public void setNotes(String notes) {
+        this.notes = notes;
     }
 
-    public String getTapeColor() {
-        return tapeColor;
+    public Date getMessageDate() {
+        return messageDate;
     }
 
-    public void setTapeColor(String tapeColor) {
-        this.tapeColor = tapeColor;
+    public void setMessageDate(Date messageDate) {
+        this.messageDate = messageDate;
     }
 
-    public int getWallId() {
-        return wallId;
+    public String getClaimedBy() {
+        return claimedBy;
     }
 
-    public void setWallId(int wallId) {
-        this.wallId = wallId;
-    }
-    public boolean isProject() {
-        return isProject;
+    public void setClaimedBy(String claimedBy) {
+        this.claimedBy = claimedBy;
     }
 
-    public void setProject(boolean project) {
-        isProject = project;
+    public String getClaimedDate() {
+        return claimedDate;
     }
 
-    public boolean isCompleted() {
-        return isCompleted;
-    }
-
-    public void setCompleted(boolean completed) {
-        isCompleted = completed;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public boolean isRemoved() {
-        return removed;
-    }
-
-    public void setRemoved(boolean removed) {
-        this.removed = removed;
+    public void setClaimedDate(String claimedDate) {
+        this.claimedDate = claimedDate;
     }
 }

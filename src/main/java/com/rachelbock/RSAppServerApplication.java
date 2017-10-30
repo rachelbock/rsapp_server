@@ -14,13 +14,12 @@ public class RSAppServerApplication extends Application<RSAppServerConfiguration
 
     @Override
     public String getName() {
-        return "Clamber Server";
+        return "RSApp Server";
     }
 
     @Override
     public void initialize(final Bootstrap<RSAppServerConfiguration> bootstrap) {
         bootstrap.addBundle(new AssetsBundle("/assets", "/assets", "index.html"));
-
     }
 
     @Override
