@@ -46,32 +46,34 @@ public class PushNotificationHandler {
         return snsClient;
     }
 
+    /**
+     * Publishes messages to the Floor Manager SNS topic. This will broadcast the message to all subscribed devices.
+     *
+     * @param message The message to publish
+     */
     public void publishMessage(String message) {
         AmazonSNSClient snsClient = getClient();
         PublishRequest publishRequest = new PublishRequest(TOPIC_ARN, message);
         snsClient.publish(publishRequest);
     }
 
-    public void subscribeNewMobileEndpoint() {
+    /**
+     * Registers the mobile endpoint with the Floor Manager SNS topic.
+     *
+     * @param token device token to register
+     */
+    public void registerWithSNS(String token) {
         AmazonSNSClient snsClient = getClient();
+        // No platform endpoint ARN is stored; need to call createEndpoint.
+        mobileEndpointARN = createEndpoint(token);
         snsClient.subscribe(TOPIC_ARN, "application", mobileEndpointARN);
     }
 
-    public void registerWithSNS(String token) {
-        String endpointArn = retrieveEndpointArn();
-        boolean createNeeded = (null == endpointArn);
-
-        if (createNeeded) {
-            // No platform endpoint ARN is stored; need to call createEndpoint.
-            endpointArn = createEndpoint(token);
-            subscribeNewMobileEndpoint();
-            System.out.println("Endpoint arn = " + endpointArn + " mobile endpointArn = " + mobileEndpointARN);
-        }
-    }
-
     /**
+     * Creates the mobile endpoint using the token of the device.
+     *
      * @return never null
-     * */
+     */
     private String createEndpoint(String token) {
         AmazonSNSClient client = getClient();
 
@@ -108,18 +110,8 @@ public class PushNotificationHandler {
     }
 
     /**
-     * @return the ARN the app was registered under previously, or null if no
-     *         platform endpoint ARN is stored.
-     */
-    private String retrieveEndpointArn() {
-        // Retrieve the platform endpoint ARN from permanent storage,
-        // or return null if null is stored.
-        return mobileEndpointARN;
-    }
-
-    /**
      * Stores the platform endpoint ARN in permanent storage for lookup next time.
-     * */
+     */
     private void storeEndpointArn(String endpointArn) {
         // Write the platform endpoint ARN to permanent storage.
         mobileEndpointARN = endpointArn;

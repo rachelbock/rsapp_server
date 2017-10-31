@@ -19,7 +19,6 @@ import java.util.List;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class MessageResource {
-    private static final String NEW_SOS_MESSAGE = "New SOS Message!";
     private static final String UPDATED_SOS_MESSAGE = "SOS Message Claimed";
     private PushNotificationHandler pushNotificationHandler = new PushNotificationHandler();
 
@@ -102,8 +101,12 @@ public class MessageResource {
             stmt.setBoolean(4, newMessageRequest.isUrgent());
             stmt.setTimestamp(5, new java.sql.Timestamp(Calendar.getInstance().getTimeInMillis()));
             stmt.execute();
+            if (newMessageRequest.isUrgent()) {
+                pushNotificationHandler.publishMessage("URGENT!\nNew SOS Message");
 
-            pushNotificationHandler.publishMessage(NEW_SOS_MESSAGE);
+            } else {
+                pushNotificationHandler.publishMessage("New SOS Message.");
+            }
 
             return Response.ok("Successfully created new message").build();
         } catch (SQLIntegrityConstraintViolationException e) {

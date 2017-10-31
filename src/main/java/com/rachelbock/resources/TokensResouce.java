@@ -27,11 +27,12 @@ public class TokensResouce {
             stmt.setString(1, token.getToken());
             stmt.execute();
 
-//            pushNotificationHandler.registerWithSNS(token.getToken());
+            pushNotificationHandler.registerWithSNS(token.getToken());
 
             return Response.ok("Successfully registered token").build();
         } catch (SQLIntegrityConstraintViolationException e) {
-           return Response.ok("Successfully registered token").build();
+            System.out.println("Skipping token adding/registration with SNS");
+           return Response.ok("Successfully updated token").build();
         } catch (SQLException e1) {
             e1.printStackTrace();
         }
