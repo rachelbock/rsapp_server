@@ -41,26 +41,23 @@ public class PushNotificationHandler {
                         sessionCredentials.getSecretAccessKey(),
                         sessionCredentials.getSessionToken());
 
-        return new AmazonSNSClient(basicSessionCredentials);
+        AmazonSNSClient snsClient = new AmazonSNSClient(basicSessionCredentials);
+        snsClient.setRegion(Region.getRegion(Regions.US_WEST_2));
+        return snsClient;
     }
 
     public void publishMessage(String message) {
         AmazonSNSClient snsClient = getClient();
-        snsClient.setRegion(Region.getRegion(Regions.US_WEST_2));
         PublishRequest publishRequest = new PublishRequest(TOPIC_ARN, message);
         snsClient.publish(publishRequest);
     }
 
     public void subscribeNewMobileEndpoint() {
         AmazonSNSClient snsClient = getClient();
-        snsClient.setRegion(Region.getRegion(Regions.US_WEST_2));
         snsClient.subscribe(TOPIC_ARN, "application", mobileEndpointARN);
     }
 
     public void registerWithSNS(String token) {
-        AmazonSNSClient client = getClient();
-        client.setRegion(Region.getRegion(Regions.US_WEST_2));
-
         String endpointArn = retrieveEndpointArn();
         boolean createNeeded = (null == endpointArn);
 
@@ -77,7 +74,6 @@ public class PushNotificationHandler {
      * */
     private String createEndpoint(String token) {
         AmazonSNSClient client = getClient();
-        client.setRegion(Region.getRegion(Regions.US_WEST_2));
 
         String endpointArn = null;
         try {
