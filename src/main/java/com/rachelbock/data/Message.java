@@ -15,6 +15,7 @@ public class Message {
     private String receivedBy;
     private Date receivedDate;
     private String location;
+    private boolean claimed;
 
     public String getLocation() {
         return location;
@@ -78,5 +79,13 @@ public class Message {
 
     public void setReceivedDate(Date receivedDate) {
         this.receivedDate = receivedDate;
+    }
+
+    public boolean isClaimed() {
+        return claimed;
+    }
+
+    public void setClaimed(boolean claimed) {
+        this.claimed = claimed;
     }
 }

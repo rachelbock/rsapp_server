@@ -2,8 +2,7 @@ package com.rachelbock.resources;
 
 import com.rachelbock.data.Message;
 import com.rachelbock.db.ConnectionPool;
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
+import com.rachelbock.mobilepush.PushNotificationSender;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -14,12 +13,15 @@ import java.util.Calendar;
 import java.util.List;
 
 /**
- * Class to set up the database connection for users.
+ * Class to set up the database connection for messages.
  */
 @Path("/message")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class MessageResource {
+    private static final String NEW_SOS_MESSAGE = "New SOS Message!";
+    private static final String UPDATED_SOS_MESSAGE = "SOS Message Claimed";
+    private PushNotificationSender pushNotificationSender = new PushNotificationSender();
 
     @GET
     @Path("/open_messages")
@@ -40,6 +42,7 @@ public class MessageResource {
                 message.setReceivedDate(resultSet.getTimestamp("received_date"));
                 message.setReceivedBy(resultSet.getString("received_by"));
                 message.setTeamName(resultSet.getString("team_name"));
+                message.setClaimed(resultSet.getBoolean("claimed"));
 
                 messages.add(message);
             }
@@ -72,6 +75,7 @@ public class MessageResource {
                 message.setReceivedDate(resultSet.getTimestamp("received_date"));
                 message.setReceivedBy(resultSet.getString("received_by"));
                 message.setTeamName(resultSet.getString("team_name"));
+                message.setClaimed(resultSet.getBoolean("claimed"));
 
                 messages.add(message);
             }
@@ -98,7 +102,10 @@ public class MessageResource {
             stmt.setBoolean(4, newMessageRequest.isUrgent());
             stmt.setTimestamp(5, new java.sql.Timestamp(Calendar.getInstance().getTimeInMillis()));
             stmt.execute();
-        return Response.ok("Successfully created new message").build();
+
+            pushNotificationSender.publishMessage(NEW_SOS_MESSAGE);
+
+            return Response.ok("Successfully created new message").build();
         } catch (SQLIntegrityConstraintViolationException e) {
             throw new BadRequestException("Duplicate Message");
         } catch (SQLException e1) {
@@ -111,13 +118,17 @@ public class MessageResource {
     @Path("update_message")
     public Response updateMessage(UpdateMessageRequest updateMessageRequest) {
         try (Connection conn = ConnectionPool.getConnection()) {
-            PreparedStatement stmt = conn.prepareStatement("UPDATE message SET received_by = ?, received_date = ? " +
-                    "WHERE id = ?");
+            PreparedStatement stmt = conn.prepareStatement("UPDATE message SET received_by = ?, received_date = ?, " +
+                    "claimed = ? WHERE id = ?");
 
             stmt.setString(1, updateMessageRequest.getReceivedBy());
             stmt.setTimestamp(2, new java.sql.Timestamp(Calendar.getInstance().getTimeInMillis()));
-            stmt.setInt(3, updateMessageRequest.getMessageId());
+            stmt.setBoolean(3, true);
+            stmt.setInt(4, updateMessageRequest.getMessageId());
             stmt.execute();
+
+            pushNotificationSender.publishMessage(UPDATED_SOS_MESSAGE);
+
             return Response.ok("Successfully updated message").build();
         } catch (SQLIntegrityConstraintViolationException e) {
             throw new NotFoundException("Could not find the message to update");
@@ -126,7 +137,6 @@ public class MessageResource {
         }
         throw new InternalServerErrorException("Internal Error - could not update message");
     }
-
 
 
     /**
