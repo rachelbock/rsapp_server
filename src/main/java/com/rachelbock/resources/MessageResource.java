@@ -2,7 +2,7 @@ package com.rachelbock.resources;
 
 import com.rachelbock.data.Message;
 import com.rachelbock.db.ConnectionPool;
-import com.rachelbock.mobilepush.PushNotificationSender;
+import com.rachelbock.mobilepush.PushNotificationHandler;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -21,7 +21,7 @@ import java.util.List;
 public class MessageResource {
     private static final String NEW_SOS_MESSAGE = "New SOS Message!";
     private static final String UPDATED_SOS_MESSAGE = "SOS Message Claimed";
-    private PushNotificationSender pushNotificationSender = new PushNotificationSender();
+    private PushNotificationHandler pushNotificationHandler = new PushNotificationHandler();
 
     @GET
     @Path("/open_messages")
@@ -103,7 +103,7 @@ public class MessageResource {
             stmt.setTimestamp(5, new java.sql.Timestamp(Calendar.getInstance().getTimeInMillis()));
             stmt.execute();
 
-            pushNotificationSender.publishMessage(NEW_SOS_MESSAGE);
+            pushNotificationHandler.publishMessage(NEW_SOS_MESSAGE);
 
             return Response.ok("Successfully created new message").build();
         } catch (SQLIntegrityConstraintViolationException e) {
@@ -127,7 +127,7 @@ public class MessageResource {
             stmt.setInt(4, updateMessageRequest.getMessageId());
             stmt.execute();
 
-            pushNotificationSender.publishMessage(UPDATED_SOS_MESSAGE);
+            pushNotificationHandler.publishMessage(UPDATED_SOS_MESSAGE);
 
             return Response.ok("Successfully updated message").build();
         } catch (SQLIntegrityConstraintViolationException e) {

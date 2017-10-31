@@ -2,6 +2,7 @@ package com.rachelbock.resources;
 
 import com.rachelbock.data.Token;
 import com.rachelbock.db.ConnectionPool;
+import com.rachelbock.mobilepush.PushNotificationHandler;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -17,6 +18,7 @@ import java.util.List;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class TokensResouce {
+    private PushNotificationHandler pushNotificationHandler = new PushNotificationHandler();
 
     @POST
     public Response registerToken(Token token) {
@@ -24,9 +26,12 @@ public class TokensResouce {
             PreparedStatement stmt = conn.prepareStatement("INSERT INTO tokens (token) VALUES (?)");
             stmt.setString(1, token.getToken());
             stmt.execute();
+
+//            pushNotificationHandler.registerWithSNS(token.getToken());
+
             return Response.ok("Successfully registered token").build();
         } catch (SQLIntegrityConstraintViolationException e) {
-            throw new BadRequestException("Duplicate Token");
+           return Response.ok("Successfully registered token").build();
         } catch (SQLException e1) {
             e1.printStackTrace();
         }
